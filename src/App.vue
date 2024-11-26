@@ -1,47 +1,51 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-
+import MainPageInfo from "@/components/MainPageInfo.vue";
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="100" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
+  <header class="app-bar">
+    <RouterLink to="/">
+      <img alt="China coal logo" class="logo" src="./assets/ChinaCoal.svg" width="200" height="50" />
+    </RouterLink>
+    <div class="title"></div>
   </header>
 
   <main>
-
+    <div class="wrapper">
+      <MainPageInfo msg="China coal" />
+    </div>
   </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: White;
+  color: Black;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  height: 50px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.title {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+main {
+  margin-top: 4rem; /* Adjust based on the height of the app bar */
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.wrapper {
+  padding: 1rem;
 }
 </style>
