@@ -13,6 +13,7 @@
     </div>
     <div class="graph-container">
       <img :src="imageUrl" alt="Coal Consumption Graph" />
+      <p class="source">Source: Our world in data</p>
     </div>
   </div>
 </template>
@@ -59,6 +60,7 @@ watch(selectedCountry, updateGraph);
 
 .graph-container {
   display: flex;
+  flex-direction: column; /* Stack image and source text */
   justify-content: center; /* Center the graph horizontally */
   align-items: center; /* Center the graph vertically */
 }
@@ -76,6 +78,12 @@ p {
   font-size: 1rem;
   margin-top: 1rem;
   text-align: justify;
+}
+
+.source {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 @media (min-width: 1024px) {
