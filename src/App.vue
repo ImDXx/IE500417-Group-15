@@ -1,5 +1,5 @@
 <script setup>
-import MainPageInfo from "@/components/MainPageInfo.vue";
+import { RouterLink, RouterView } from 'vue-router';
 </script>
 
 <template>
@@ -8,11 +8,15 @@ import MainPageInfo from "@/components/MainPageInfo.vue";
       <img alt="China coal logo" class="logo" src="./assets/ChinaCoal.svg" width="200" height="50" />
     </RouterLink>
     <div class="title"></div>
+    <nav class="nav-links">
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/about">About us</RouterLink>
+    </nav>
   </header>
 
   <main>
     <div class="wrapper">
-      <MainPageInfo msg="China coal" />
+      <RouterView />
     </div>
   </main>
 </template>
@@ -21,7 +25,7 @@ import MainPageInfo from "@/components/MainPageInfo.vue";
 .app-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between; /* Space between logo and nav links */
   background-color: White;
   color: Black;
   padding: 0.5rem 1rem;
@@ -41,11 +45,25 @@ import MainPageInfo from "@/components/MainPageInfo.vue";
   margin-left: 1rem;
 }
 
+.nav-links {
+  display: flex;
+  gap: 1rem; /* Space between links */
+}
+
 main {
   margin-top: 4rem; /* Adjust based on the height of the app bar */
 }
 
 .wrapper {
   padding: 1rem;
+}
+
+.router-link {
+  color: black;
+  text-decoration: none;
+}
+
+.router-link-active {
+  font-weight: bold;
 }
 </style>

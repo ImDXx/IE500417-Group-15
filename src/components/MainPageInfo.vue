@@ -8,8 +8,8 @@
       <select v-model="selectedCountry" @change="updateGraph">
         <option value="China">China</option>
         <option value="United States">United States</option>
-        <option value="Russia">Russia</option>
-        <!-- Add more countries as needed -->
+        <option value="India">India</option>
+        <!-- This are the top 3 countries that uses coal -->
       </select>
     </div>
     <div class="graph-container">
