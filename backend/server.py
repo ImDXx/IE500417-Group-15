@@ -13,7 +13,7 @@ def get_image():
     response = requests.get(url)
     response.raise_for_status()
     data = pd.read_csv(StringIO(response.text))
-    country_data = data[data['Entity'] == country]
+    country_data = data[(data['Entity'] == country) & (data['Year'] >= 2000)]
     plt.figure(figsize=(10, 6))
     plt.plot(country_data['Year'], country_data['coal_consumption_twh'], marker='o', linestyle='-')
     plt.title(f'Coal Consumption in {country} (TWh)')

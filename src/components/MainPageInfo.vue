@@ -8,6 +8,7 @@
       <select v-model="selectedCountry" @change="updateGraph">
         <option value="China">China</option>
         <option value="United States">United States</option>
+        <option value="Russia">Russia</option>
         <!-- Add more countries as needed -->
       </select>
     </div>
@@ -19,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import {ref, onMounted, watch} from 'vue';
 
 defineProps({
   msg: {
@@ -49,6 +50,8 @@ watch(selectedCountry, updateGraph);
   align-items: center; /* Center children horizontally */
   justify-content: center; /* Center children vertically */
   height: 100vh; /* Full viewport height */
+  margin: 0 auto; /* Center container horizontally */
+  margin-left: 65px; /* Add left margin to move it to the right */
 }
 
 .greetings, .graph-container {
