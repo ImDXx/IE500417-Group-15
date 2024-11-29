@@ -48,6 +48,7 @@ import { RouterLink, RouterView } from 'vue-router';
 .nav-links {
   display: flex;
   gap: 1rem; /* Space between links */
+  text-decoration: #181818;
 }
 
 main {
@@ -59,7 +60,7 @@ main {
 }
 
 .router-link {
-  color: black;
+  text-decoration: black;
   text-decoration: none;
 }
 

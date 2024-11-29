@@ -9,18 +9,22 @@
         <option value="China">China</option>
         <option value="United States">United States</option>
         <option value="India">India</option>
-        <!-- This are the top 3 countries that uses coal -->
+        <!-- These are the top 3 countries that use coal -->
       </select>
     </div>
     <div class="graph-container">
-      <img :src="imageUrl" alt="Coal Consumption Graph" />
+      <canvas id="coalConsumptionGraph" width="800" height="600"></canvas>
       <p class="source">Source: Our world in data</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref, onMounted, watch} from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
+import { Chart, registerables } from 'chart.js';
+
+// Register the necessary components, including scales
+Chart.register(...registerables);
 
 defineProps({
   msg: {
@@ -30,10 +34,58 @@ defineProps({
 });
 
 const selectedCountry = ref('China');
-const imageUrl = ref('');
+let chartInstance = null;
 
-const updateGraph = () => {
-  imageUrl.value = `http://localhost:5000/coal_consumption?country=${selectedCountry.value}`;
+const updateGraph = async () => {
+  try {
+    const response = await fetch(`http://localhost:5000/coal_consumption?country=${selectedCountry.value}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('Fetched data:', data);
+
+    await nextTick(); // Wait for the DOM to update
+
+    const ctx = document.getElementById('coalConsumptionGraph').getContext('2d');
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.years,
+        datasets: [{
+          label: 'Coal Consumption',
+          data: data.values,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Year'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Consumption'
+            }
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching or updating graph:', error);
+  }
 };
 
 onMounted(() => {
@@ -52,6 +104,7 @@ watch(selectedCountry, updateGraph);
   height: 100vh; /* Full viewport height */
   margin: 0 auto; /* Center container horizontally */
   margin-left: 65px; /* Add left margin to move it to the right */
+  padding-left: 200px;
 }
 
 .greetings, .graph-container {
@@ -66,6 +119,12 @@ watch(selectedCountry, updateGraph);
   flex-direction: column; /* Stack image and source text */
   justify-content: center; /* Center the graph horizontally */
   align-items: center; /* Center the graph vertically */
+  width: 600px;
+}
+
+canvas {
+  max-width: 100%; /* Ensure the canvas scales with the container */
+  height: auto; /* Maintain aspect ratio */
 }
 
 h1 {
