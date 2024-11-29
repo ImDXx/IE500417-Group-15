@@ -1,9 +1,10 @@
 <template>
   <div class="container">
     <div class="greetings">
-      <h1 class="green">{{ msg }}</h1>
+      <h1 class="green">China's Coal Story: Powering Progress, Shaping the Future</h1>
       <p>
-        ChinaCoal Lorem Ipsum: Coal mining and consumption have significant impacts on the environment. The extraction process can lead to deforestation, habitat destruction, and soil erosion. Burning coal releases pollutants such as sulfur dioxide, nitrogen oxides, and particulate matter, contributing to air pollution and respiratory problems. Additionally, coal combustion is a major source of carbon dioxide emissions, driving climate change and global warming. Efforts to mitigate these effects include transitioning to cleaner energy sources and implementing stricter environmental regulations.
+        China stands as one of the world's largest consumers of coal, a resource that has fueled its rapid economic growth and industrialization. However, this dependence comes with significant environmental and social costs. From air pollution and greenhouse gas emissions to habitat destruction and public health challenges, the impact of coal reaches far beyond the mines and power plants.
+        This visualization tool unpacks the story of China’s coal usage—its scale, consequences, and the country's journey toward a more sustainable energy future. Explore interactive data on coal production, consumption trends, and environmental effects, alongside insights into China's efforts to balance energy demands with ecological responsibility.
       </p>
       <select v-model="selectedCountry" @change="updateGraph">
         <option value="China">China</option>
@@ -109,7 +110,7 @@ watch(selectedCountry, updateGraph);
 
 .greetings, .graph-container {
   width: 80%; /* Set a fixed width for both containers */
-  padding: 1rem;
+  padding: 0.6rem;
   box-sizing: border-box; /* Include padding in the element's total width and height */
   text-align: center; /* Center text */
 }
