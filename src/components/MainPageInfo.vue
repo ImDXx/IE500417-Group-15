@@ -23,11 +23,30 @@
       </div>
     </div>
   </div>
+  <div class="second-wrapper">
+    <div class="flex-container">
+      <div class="chart-container">
+        <StackedBarChart />
+      </div>
+      <div class="text-container">
+        <h1 class="green">Global CO₂ Emissions</h1>
+        <p>
+          Compare CO₂ emissions across China, India, and the United States to see trends and differences.
+        </p>
+        <select v-model="selectedVisualization">
+          <option value="co2_emissions">CO₂ Emissions Over Time</option>
+          <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
+          <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+        </select>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
+import StackedBarChart from './charts/StackedBarChart.vue'; // Import the StackedBarChart component
 
 const selectedVisualization = ref('co2_emissions');
 
@@ -67,13 +86,17 @@ html, body {
   box-sizing: border-box;
 }
 
-.wrapper {
+.wrapper, .second-wrapper {
   display: flex;
+  flex-direction: column; /* Stack items vertically */
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50vh;
+  height: 100vh;
   box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #181818;
+  margin-bottom: 30px;
 }
 
 .flex-container {
@@ -93,11 +116,15 @@ html, body {
   justify-content: center;
   align-items: center;
   padding: 20px;
+  width: 100%; /* Ensure the chart container takes full width */
+  height: 100%; /* Ensure the chart container takes full height */
+  overflow: hidden; /* Prevent overflow */
 }
 
 .text-container {
   flex: 1;
   padding: 20px;
+  text-align: right;
 }
 
 .green {
