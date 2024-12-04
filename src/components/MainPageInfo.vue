@@ -23,7 +23,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import GraphComponent from './Graphs/GraphComponent.vue';
+import GraphComponent from './charts/GraphComponent.vue';
 
 const selectedVisualization = ref('co2_emissions');
 

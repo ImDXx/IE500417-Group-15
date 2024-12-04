@@ -2,10 +2,13 @@
   <div class="page1-container">
     <h1>This is page 1</h1>
     <p>Oscar yeet a graph here please</p>
+    <CorrelationMatrix />
   </div>
 </template>
 
 <script setup>
+import CorrelationMatrix from './charts/CorrelationMatrix.vue';
+
 
 
 </script>
