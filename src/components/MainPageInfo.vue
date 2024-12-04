@@ -1,6 +1,15 @@
 <template>
-  <div class="container">
-    <div class="greetings">
+  <div class="flex-container">
+    <div class="chart-container">
+      <GraphComponent
+          :endpoint="'multi_country_data'"
+          :type="selectedVisualization"
+          :xAxisLabel="'Year'"
+          :yAxisLabel="yAxisLabel"
+          :chartTitle="chartTitle"
+      />
+    </div>
+    <div class="text-container">
       <h1 class="green">Global CO₂ Emissions</h1>
       <p>
         Compare CO₂ emissions across China, India, and the United States to see trends and differences.
@@ -11,13 +20,6 @@
         <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
       </select>
     </div>
-    <GraphComponent
-      :endpoint="'multi_country_data'"
-      :type="selectedVisualization"
-      :xAxisLabel="'Year'"
-      :yAxisLabel="yAxisLabel"
-      :chartTitle="chartTitle"
-    />
   </div>
 </template>
 
@@ -53,3 +55,39 @@ const chartTitle = computed(() => {
   }
 });
 </script>
+
+<style scoped>
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  height: 100vh;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+.chart-container {
+  flex: 1;
+}
+
+.text-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.green {
+  color: green;
+}
+</style>
