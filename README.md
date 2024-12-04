@@ -1,7 +1,14 @@
 # IE500417-Group15
  Data visualization project
 
-## Instructions:
+## Instructions to Run the Project:
 
-1. Run server.py
-2. Run npm
+###Install Required dependencies:
+ - pip install -r requirements.txt
+
+### Run Backend Server
+ - python backend\server.py
+
+
+### Run Front end 
+ -  Npm run dev
