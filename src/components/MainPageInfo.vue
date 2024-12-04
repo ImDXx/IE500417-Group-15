@@ -1,24 +1,26 @@
 <template>
-  <div class="flex-container">
-    <div class="chart-container">
-      <GraphComponent
-          :endpoint="'multi_country_data'"
-          :type="selectedVisualization"
-          :xAxisLabel="'Year'"
-          :yAxisLabel="yAxisLabel"
-          :chartTitle="chartTitle"
-      />
-    </div>
-    <div class="text-container">
-      <h1 class="green">Global CO₂ Emissions</h1>
-      <p>
-        Compare CO₂ emissions across China, India, and the United States to see trends and differences.
-      </p>
-      <select v-model="selectedVisualization">
-        <option value="co2_emissions">CO₂ Emissions Over Time</option>
-        <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
-        <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
-      </select>
+  <div class="wrapper">
+    <div class="flex-container">
+      <div class="chart-container">
+        <GraphComponent
+            :endpoint="'multi_country_data'"
+            :type="selectedVisualization"
+            :xAxisLabel="'Year'"
+            :yAxisLabel="yAxisLabel"
+            :chartTitle="chartTitle"
+        />
+      </div>
+      <div class="text-container">
+        <h1 class="green">Global CO₂ Emissions</h1>
+        <p>
+          Compare CO₂ emissions across China, India, and the United States to see trends and differences.
+        </p>
+        <select v-model="selectedVisualization">
+          <option value="co2_emissions">CO₂ Emissions Over Time</option>
+          <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
+          <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
@@ -57,7 +59,6 @@ const chartTitle = computed(() => {
 </script>
 
 <style scoped>
-
 html, body {
   margin: 0;
   padding: 0;
@@ -66,20 +67,32 @@ html, body {
   box-sizing: border-box;
 }
 
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50vh;
+  box-sizing: border-box;
+}
 
 .flex-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 80vw;
-  height: 100vh;
+  height: 50vh;
   box-sizing: border-box;
   margin: auto;
 }
 
 .chart-container {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 .text-container {
