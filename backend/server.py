@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # New dataset URL
-DATA_URL = "https://api.csvgetter.com/demo/GJIYp6QJbo1xwNR9mvLM"
+DATA_URL = "https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv"
 data = pd.read_csv(DATA_URL)
 
 @app.route('/multi_country_data')
