@@ -19,6 +19,7 @@
           <option value="co2_emissions">CO₂ Emissions Over Time</option>
           <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
           <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+          <option value="air_pollution">Air Pollution Over Time</option>
         </select>
       </div>
     </div>
@@ -41,12 +42,18 @@
       </div>
     </div>
   </div>
+  <div class="wrapper">
+    <div class="chart-container">
+      <AirPollutionChart/>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
 import StackedBarChart from './charts/StackedBarChart.vue'; // Import the StackedBarChart component
+import AirPollutionChart from './charts/AirPollutionChart.vue';
 
 const selectedVisualization = ref('co2_emissions');
 
