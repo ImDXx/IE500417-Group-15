@@ -1,6 +1,6 @@
 <template>
   <div class="graph-container">
-    <canvas ref="chartCanvas" width="800" height="600"></canvas>
+    <canvas ref="chartCanvas" width="1200" height="800"></canvas>
     <p class="source">Source: Our World in Data</p>
   </div>
 </template>
@@ -161,13 +161,13 @@ onMounted(renderGraph);
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 650px; /*Limited the width of the graph, if not it will overflow*/
-  max-height: 480px;
+  max-width: 1000px; /*Limited the width of the graph, if not it will overflow*/
+  max-height: 500px;
 }
 
 canvas {
   max-width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .source {

@@ -18,7 +18,6 @@
         <option value="co2_emissions">CO₂ Emissions Over Time</option>
         <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
         <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
-        <option value="air_pollution">Air Pollution Over Time</option>
       </select>
     </div>
   </div>
@@ -134,7 +133,7 @@ html, body {
 }
 
 .chart-container {
-  flex: 1;
+  flex: 0 0 70%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -145,7 +144,7 @@ html, body {
 }
 
 .text-container {
-  flex: 1;
+  flex: 0 0 30%;
   padding: 20px;
   text-align: right;
 }
@@ -159,9 +158,24 @@ html, body {
   transition: background-color 0.3s ease;
 }
 
+.dropdown-menu option {
+  position: absolute;
+}
+
+.dropdown-menu select:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.dropdown-menu option:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
 .dropdown-menu:hover {
   background-color: #f0f0f0;
 }
+
 
 .green {
   color: green;
