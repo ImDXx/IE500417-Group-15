@@ -159,6 +159,8 @@ onMounted(renderGraph);
   align-items: center;
   justify-content: center;
   width: 100%;
+  max-width: 630px; /*Limited the width of the graph, if not it will overflow*/
+  max-height: 480px;
 }
 
 canvas {

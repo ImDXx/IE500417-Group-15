@@ -92,11 +92,12 @@ html, body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
+  height: 80vh;
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #181818;
   margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 .flex-container {
@@ -117,7 +118,7 @@ html, body {
   align-items: center;
   padding: 20px;
   width: 100%; /* Ensure the chart container takes full width */
-  height: 100%; /* Ensure the chart container takes full height */
+  height: 120%; /* Ensure the chart container takes full height */
   overflow: hidden; /* Prevent overflow */
 }
 
