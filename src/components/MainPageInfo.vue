@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-    <div class="flex-container">
       <div class="chart-container">
         <GraphComponent
             :endpoint="'multi_country_data'"
@@ -21,10 +20,8 @@
           <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
         </select>
       </div>
-    </div>
   </div>
   <div class="second-wrapper">
-    <div class="flex-container">
       <div class="chart-container">
         <RadarChart :selectedYear="selectedYear" :selectedCountry="selectedCountry" />
       </div>
@@ -44,7 +41,6 @@
           <option value="2018">2018</option>
         </select>
       </div>
-    </div>
   </div>
 </template>
 
@@ -95,26 +91,26 @@ html, body {
 
 .wrapper, .second-wrapper {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: stretch;
   width: 100%;
-  height: 80vh;
+  height: 100%;
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #181818;
   margin-bottom: 30px;
   margin-top: 30px;
   opacity: 0.99;
+  padding: 50px 20px;
 }
 
 .flex-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: start;
   align-items: stretch;
   width: 80vw;
-  height: 50vh;
+  height: 100%;
   box-sizing: border-box;
   margin: auto;
 }
@@ -126,7 +122,7 @@ html, body {
   align-items: center;
   padding: 20px;
   width: 100%; /* Ensure the chart container takes full width */
-  height: 120%; /* Ensure the chart container takes full height */
+  height: 100%; /* Ensure the chart container takes full height */
   overflow: hidden; /* Prevent overflow */
 }
 
