@@ -26,17 +26,22 @@
   <div class="second-wrapper">
     <div class="flex-container">
       <div class="chart-container">
-        <StackedBarChart />
+        <RadarChart :selectedYear="selectedYear" :selectedCountry="selectedCountry" />
       </div>
       <div class="text-container">
-        <h1 class="green">Global CO₂ Emissions</h1>
+        <h1 class="green">Radar Chart</h1>
         <p>
-          Compare CO₂ emissions across China, India, and the United States to see trends and differences.
+          Compare per capita greenhouse gas emissions between China and another country.
         </p>
-        <select v-model="selectedVisualization">
-          <option value="co2_emissions">CO₂ Emissions Over Time</option>
-          <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
-          <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+        <select v-model="selectedCountry">
+          <option value="India">India</option>
+          <option value="United States">United States</option>
+          <option value="Brazil">Brazil</option>
+        </select>
+        <select v-model="selectedYear">
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
         </select>
       </div>
     </div>
@@ -46,9 +51,11 @@
 <script setup>
 import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
-import StackedBarChart from './charts/StackedBarChart.vue'; // Import the StackedBarChart component
+import RadarChart from './charts/RadarChart.vue'; // Import the RadarChart component
 
 const selectedVisualization = ref('co2_emissions');
+const selectedYear = ref(2020);
+const selectedCountry = ref('India');
 
 const yAxisLabel = computed(() => {
   switch (selectedVisualization.value) {

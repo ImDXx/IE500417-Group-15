@@ -156,6 +156,8 @@ onMounted(renderRadarChart);
     justify-content: center;
     width: 100%;
     height: 80vh;
+    max-width: 630px; /*Limited the width of the graph, if not it will overflow*/
+    max-height: 480px;
 }
 
 canvas {
