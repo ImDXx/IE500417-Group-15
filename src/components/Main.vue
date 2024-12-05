@@ -1,51 +1,57 @@
 <template>
   <div class="wrapper">
-      <div class="chart-container">
-        <GraphComponent
-            :endpoint="'multi_country_data'"
-            :type="selectedVisualization"
-            :xAxisLabel="'Year'"
-            :yAxisLabel="yAxisLabel"
-            :chartTitle="chartTitle"
-        />
-      </div>
-      <div class="text-container">
-        <h1 class="green">Global CO₂ Emissions</h1>
-        <p>
-          Compare CO₂ emissions across China, India, and the United States to see trends and differences.
-        </p>
-        <select v-model="selectedVisualization" class="dropdown-menu">
-          <option value="co2_emissions">CO₂ Emissions Over Time</option>
-          <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
-          <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
-          <option value="air_pollution">Air Pollution Over Time</option>
-        </select>
-      </div>
+    <div class="chart-container">
+      <GraphComponent
+          :endpoint="'multi_country_data'"
+          :type="selectedVisualization"
+          :xAxisLabel="'Year'"
+          :yAxisLabel="yAxisLabel"
+          :chartTitle="chartTitle"
+      />
+    </div>
+    <div class="text-container">
+      <h1 class="green">Global CO₂ Emissions</h1>
+      <p>
+        Compare CO₂ emissions across China, India, and the United States to see trends and differences.
+      </p>
+      <select v-model="selectedVisualization" class="dropdown-menu">
+        <option value="co2_emissions">CO₂ Emissions Over Time</option>
+        <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
+        <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+        <option value="air_pollution">Air Pollution Over Time</option>
+      </select>
+    </div>
   </div>
   <div class="second-wrapper">
-      <div class="chart-container">
-        <RadarChart :selectedYear="selectedYear" :selectedCountry="selectedCountry" />
-      </div>
-      <div class="text-container">
-        <h1 class="green">Radar Chart</h1>
-        <p>
-          Compare per capita greenhouse gas emissions between China and another country.
-        </p>
-        <select v-model="selectedCountry" class="dropdown-menu">
-          <option value="India">India</option>
-          <option value="United States">United States</option>
-          <option value="Brazil">Brazil</option>
-        </select>
-        <select v-model="selectedYear" class="dropdown-menu">
-          <option value="2020">2020</option>
-          <option value="2019">2019</option>
-          <option value="2018">2018</option>
-        </select>
-      </div>
-    </div>
-  <div class="wrapper">
     <div class="chart-container">
-      <AirPollutionChart/>
+      <RadarChart :selectedYear="selectedYear" :selectedCountry="selectedCountry" />
+    </div>
+    <div class="text-container">
+      <h1 class="green">Radar Chart</h1>
+      <p>
+        Compare per capita greenhouse gas emissions between China and another country.
+      </p>
+      <select v-model="selectedCountry" class="dropdown-menu">
+        <option value="India">India</option>
+        <option value="United States">United States</option>
+        <option value="Brazil">Brazil</option>
+      </select>
+      <select v-model="selectedYear" class="dropdown-menu">
+        <option value="2020">2020</option>
+        <option value="2019">2019</option>
+        <option value="2018">2018</option>
+      </select>
+    </div>
+  </div>
+  <div class="third-wrapper">
+    <div class="chart-container">
+      <AirPollutionChart />
+    </div>
+    <div class="text-container">
+      <h1 class="green">Air Pollution Levels</h1>
+      <p>
+        Compare PM2.5 levels across different countries over the years.
+      </p>
     </div>
   </div>
 </template>
@@ -53,7 +59,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
-import RadarChart from './charts/RadarChart.vue'; // Import the RadarChart component
+import RadarChart from './charts/RadarChart.vue';
 import AirPollutionChart from './charts/AirPollutionChart.vue';
 
 const selectedVisualization = ref('co2_emissions');
@@ -88,8 +94,6 @@ const chartTitle = computed(() => {
 </script>
 
 <style scoped>
-
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -101,7 +105,6 @@ const chartTitle = computed(() => {
   }
 }
 
-
 html, body {
   margin: 0;
   padding: 0;
@@ -110,7 +113,7 @@ html, body {
   box-sizing: border-box;
 }
 
-.wrapper, .second-wrapper {
+.wrapper, .second-wrapper, .third-wrapper {
   display: flex;
   justify-content: start;
   align-items: stretch;
@@ -126,7 +129,7 @@ html, body {
   animation: fadeIn 1s forwards;
 }
 
-.wrapper.visible, .second-wrapper.visible {
+.wrapper.visible, .second-wrapper.visible, .third-wrapper.visible {
   opacity: 1;
 }
 
@@ -136,9 +139,9 @@ html, body {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  width: 100%; /* Ensure the chart container takes full width */
-  height: 100%; /* Ensure the chart container takes full height */
-  overflow: hidden; /* Prevent overflow */
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .text-container {
