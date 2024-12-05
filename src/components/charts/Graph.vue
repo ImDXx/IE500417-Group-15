@@ -13,6 +13,8 @@ import {
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement);
 
+
+const source = "Source: Our World in Data";
 // Example data, replace dynamically with props or API data
 const chartData = {
   labels: ['1965', '1970', '1975', '1980', '1985', '1990', '1995', '2000', '2005', '2010', '2015', '2020'],

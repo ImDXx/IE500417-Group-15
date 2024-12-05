@@ -15,6 +15,7 @@ import { ref, onMounted } from 'vue';
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const chartData = ref(null);
+const source = "Source: Our World in Data";
 const chartOptions = {
   responsive: true,
   plugins: {

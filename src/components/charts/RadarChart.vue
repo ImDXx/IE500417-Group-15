@@ -10,6 +10,7 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
+const source = "Source: Our World in Data";
 let chartInstance = null; // Chart.js instance
 const chartCanvas = ref(null); // Reference to the canvas element
 

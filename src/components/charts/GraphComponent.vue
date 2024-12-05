@@ -11,6 +11,8 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
+
+const source = "Source: Our World in Data";
 // Props for handling dynamic data
 const props = defineProps({
   endpoint: {

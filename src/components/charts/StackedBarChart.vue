@@ -7,6 +7,7 @@ import {Bar} from 'vue-chartjs';
 // Register Chart.js components and zoom plugin
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, zoomPlugin);
 
+const source = "Source: Our World in Data";
 const chartData = ref(null);
 const selectedContributors = ref([]); // Stores user-selected contributors
 const contributors = ref(['Coal CO₂', 'Oil CO₂', 'Gas CO₂', 'Flaring CO₂', 'Other Industry CO₂']); // Available contributors
