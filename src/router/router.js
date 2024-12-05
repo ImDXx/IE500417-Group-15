@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '@/components/MainPageInfo.vue';
+import Home from '@/components/Main.vue';
 import About from '@/components/About.vue';
 import Page1 from "@/components/Page1.vue";
 import Page2 from "@/components/Page2.vue";

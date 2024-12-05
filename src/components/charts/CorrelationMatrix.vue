@@ -6,6 +6,8 @@ import { Bar } from 'vue-chartjs';
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
+const source = "Source: Our World in Data";
+
 const chartData = ref(null);
 
 const chartOptions = {

@@ -1,6 +1,6 @@
 <template>
     <div class="graph-container">
-        <canvas ref="chartCanvas" width="800" height="600"></canvas>
+        <canvas ref="chartCanvas" width="1200" height="800"></canvas>
     </div>
 </template>
 
@@ -10,6 +10,7 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
+const source = "Source: Our World in Data";
 let chartInstance = null; // Chart.js instance
 const chartCanvas = ref(null); // Reference to the canvas element
 
@@ -156,8 +157,8 @@ onMounted(renderRadarChart);
     justify-content: center;
     width: 100%;
     height: 80vh;
-    max-width: 630px; /*Limited the width of the graph, if not it will overflow*/
-    max-height: 480px;
+    max-width: 1000px; /*Limited the width of the graph, if not it will overflow*/
+    max-height: 500px;
 }
 
 canvas {

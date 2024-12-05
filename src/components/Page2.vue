@@ -2,12 +2,12 @@
   <div class="page1-container">
     <h1>This is page 2</h1>
     <p>Oscar yeet a graph here please</p>
-    <StackedBarChart />
+    <CoalVsAirPollution />
   </div>
 </template>
 
 <script setup>
-import StackedBarChart from './charts/StackedBarChart.vue';
+import CoalVsAirPollution from './charts/CoalVsAirPollution.vue';
 
 
 

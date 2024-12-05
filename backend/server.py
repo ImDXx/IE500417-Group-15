@@ -201,6 +201,32 @@ def get_air_pollution_data():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/coal_vs_air_pollution', methods=['GET'])
+def get_coal_vs_air_pollution():
+    try:
+        # Load the air pollution dataset
+        air_pollution_data = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
+        air_pollution_data.rename(columns={'Period': 'year', 'FactValueNumeric': 'air_pollution_deaths'}, inplace=True)
+
+        # Filter relevant data for China
+        air_pollution_data = air_pollution_data[air_pollution_data['Location'] == 'China']
+        air_pollution_data = air_pollution_data[['year', 'air_pollution_deaths']]
+        
+        # Group and average deaths per year
+        air_pollution_data = air_pollution_data.groupby('year')['air_pollution_deaths'].mean().reset_index()
+
+        # Merge with the CO₂ emissions dataset
+        china_co2_data = data[data['country'] == 'China'][['year', 'coal_co2']]
+        combined_data = pd.merge(china_co2_data, air_pollution_data, on='year', how='inner')
+
+        # Convert to JSON
+        return jsonify(combined_data.to_dict(orient='list'))
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/test', methods=['GET'])
 def test_route():
