@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-    <div class="flex-container">
       <div class="chart-container">
         <GraphComponent
             :endpoint="'multi_country_data'"
@@ -22,26 +21,28 @@
           <option value="air_pollution">Air Pollution Over Time</option>
         </select>
       </div>
-    </div>
   </div>
   <div class="second-wrapper">
-    <div class="flex-container">
       <div class="chart-container">
-        <StackedBarChart />
+        <RadarChart :selectedYear="selectedYear" :selectedCountry="selectedCountry" />
       </div>
       <div class="text-container">
-        <h1 class="green">Global CO₂ Emissions</h1>
+        <h1 class="green">Radar Chart</h1>
         <p>
-          Compare CO₂ emissions across China, India, and the United States to see trends and differences.
+          Compare per capita greenhouse gas emissions between China and another country.
         </p>
-        <select v-model="selectedVisualization">
-          <option value="co2_emissions">CO₂ Emissions Over Time</option>
-          <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
-          <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
+        <select v-model="selectedCountry">
+          <option value="India">India</option>
+          <option value="United States">United States</option>
+          <option value="Brazil">Brazil</option>
+        </select>
+        <select v-model="selectedYear">
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
         </select>
       </div>
     </div>
-  </div>
   <div class="wrapper">
     <div class="chart-container">
       <AirPollutionChart/>
@@ -52,10 +53,12 @@
 <script setup>
 import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
-import StackedBarChart from './charts/StackedBarChart.vue'; // Import the StackedBarChart component
+import RadarChart from './charts/RadarChart.vue'; // Import the RadarChart component
 import AirPollutionChart from './charts/AirPollutionChart.vue';
 
 const selectedVisualization = ref('co2_emissions');
+const selectedYear = ref(2020);
+const selectedCountry = ref('India');
 
 const yAxisLabel = computed(() => {
   switch (selectedVisualization.value) {
@@ -95,26 +98,17 @@ html, body {
 
 .wrapper, .second-wrapper {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: stretch;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #181818;
   margin-bottom: 30px;
-}
-
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: stretch;
-  width: 80vw;
-  height: 50vh;
-  box-sizing: border-box;
-  margin: auto;
+  margin-top: 30px;
+  opacity: 0.99;
+  padding: 50px 20px;
 }
 
 .chart-container {
