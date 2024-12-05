@@ -19,7 +19,8 @@ import StackedBarChart from './charts/StackedBarChart.vue';
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   margin: 0 auto;
   text-align: center; /* Center text horizontally */
   position: absolute;
