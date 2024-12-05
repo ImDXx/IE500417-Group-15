@@ -104,17 +104,6 @@ html, body {
   padding: 50px 20px;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: stretch;
-  width: 80vw;
-  height: 100%;
-  box-sizing: border-box;
-  margin: auto;
-}
-
 .chart-container {
   flex: 1;
   display: flex;
