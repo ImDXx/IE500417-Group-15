@@ -186,11 +186,15 @@ def get_air_pollution_data():
         # Example processing (average PM2.5 levels by year)
         # processed_data = (df.groupby('Period')[['FactValueNumeric']].mean().to_dict())
 
-        grouped_data = df.groupby(['Location', 'Period'])['FactValueNumeric'].mean().unstack(fill_value=0)
+        selected_countries = ['United States of America', 'India' , 'China']
+
+        df_filtered = df[df['Location'].isin(selected_countries)]
+
+        grouped_data = df_filtered.groupby(['Location', 'Period'])['FactValueNumeric'].mean().unstack(fill_value=0)
 
         data = grouped_data.to_dict(orient='index') 
 
-        print(df[['Period', 'FactValueNumeric']].head())
+        print(data)
 
         return jsonify(data)
 
