@@ -98,6 +98,7 @@ html, body {
   background-color: #181818;
   margin-bottom: 30px;
   margin-top: 30px;
+  opacity: 0.99;
 }
 
 .flex-container {
