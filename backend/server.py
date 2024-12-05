@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
+import os
 import requests
 
 app = Flask(__name__)
@@ -122,7 +123,37 @@ def get_ghg_contributors():
 
     return jsonify(result)
 
+@app.route('/air_pollution_data', methods=['GET'])
+def get_air_pollution_data():
+    try:
+        # Load and process the air pollution dataset
 
+        
+        df = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
+        
+        #Period = Year
+        df['Period'] = df['Period'].astype(int)
+
+        df = df.dropna(subset=['Period', 'FactValueNumeric']) 
+
+        # Example processing (average PM2.5 levels by year)
+        # processed_data = (df.groupby('Period')[['FactValueNumeric']].mean().to_dict())
+
+        grouped_data = df.groupby(['Location', 'Period'])['FactValueNumeric'].mean().unstack(fill_value=0)
+
+        data = grouped_data.to_dict(orient='index') 
+
+        print(df[['Period', 'FactValueNumeric']].head())
+
+        return jsonify(data)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/test', methods=['GET'])
+def test_route():
+    return "Test route works!"
 
 if __name__ == '__main__':
     app.run(debug=True)
