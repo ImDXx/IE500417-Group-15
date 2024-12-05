@@ -12,6 +12,20 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 DATA_URL = "https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv"
 data = pd.read_csv(DATA_URL)
 
+@app.route('/available_years')
+def available_years():
+    # Extract unique years from the dataset
+    unique_years = data['year'].dropna().unique()
+    sorted_years = sorted(unique_years)  # Sort the years for better usability
+
+    # Convert all years to Python int type for JSON serialization
+    python_years = [int(year) for year in sorted_years]
+
+    # Convert the NumPy array directly to a list without calling tolist() again
+    return jsonify(python_years)
+
+
+
 @app.route('/multi_country_data')
 def get_multi_country_data():
     visualization_type = request.args.get('type', 'co2_emissions')
@@ -121,6 +135,39 @@ def get_ghg_contributors():
     result = china_data.to_dict(orient='list')
 
     return jsonify(result)
+
+@app.route('/emissions_by_year')
+def emissions_by_year():
+    country = request.args.get('country', 'China')
+    year = int(request.args.get('year', 2020))
+
+    # Filter data for the selected country and year
+    filtered_data = data[(data['country'] == country) & (data['year'] == year)]
+
+    if filtered_data.empty:
+        return jsonify({
+            "error": "No data available for the selected country and year."
+        }), 404
+
+    # Extract per capita emissions data
+    emissions_per_capita = filtered_data[
+        ['coal_co2_per_capita', 'flaring_co2_per_capita', 'gas_co2_per_capita', 
+         'oil_co2_per_capita', 'other_co2_per_capita']
+    ].fillna(0).iloc[0]
+
+    # Return as JSON
+    return jsonify({
+        "country": country,
+        "year": year,
+        "emissions": {
+            "Coal CO₂ (per capita)": emissions_per_capita['coal_co2_per_capita'],
+            "Flaring CO₂ (per capita)": emissions_per_capita['flaring_co2_per_capita'],
+            "Gas CO₂ (per capita)": emissions_per_capita['gas_co2_per_capita'],
+            "Oil CO₂ (per capita)": emissions_per_capita['oil_co2_per_capita'],
+            "Other CO₂ (per capita)": emissions_per_capita['other_co2_per_capita'],
+        }
+    })
+
 
 
 
