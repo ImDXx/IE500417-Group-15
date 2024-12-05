@@ -14,7 +14,7 @@
         <p>
           Compare CO₂ emissions across China, India, and the United States to see trends and differences.
         </p>
-        <select v-model="selectedVisualization">
+        <select v-model="selectedVisualization" class="dropdown-menu">
           <option value="co2_emissions">CO₂ Emissions Over Time</option>
           <option value="fuel_emissions">CO₂ Emissions by Fuel Type</option>
           <option value="gdp_vs_co2">GDP vs. CO₂ Emissions</option>
@@ -31,12 +31,12 @@
         <p>
           Compare per capita greenhouse gas emissions between China and another country.
         </p>
-        <select v-model="selectedCountry">
+        <select v-model="selectedCountry" class="dropdown-menu">
           <option value="India">India</option>
           <option value="United States">United States</option>
           <option value="Brazil">Brazil</option>
         </select>
-        <select v-model="selectedYear">
+        <select v-model="selectedYear" class="dropdown-menu">
           <option value="2020">2020</option>
           <option value="2019">2019</option>
           <option value="2018">2018</option>
@@ -88,6 +88,20 @@ const chartTitle = computed(() => {
 </script>
 
 <style scoped>
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 html, body {
   margin: 0;
   padding: 0;
@@ -107,8 +121,13 @@ html, body {
   background-color: #181818;
   margin-bottom: 30px;
   margin-top: 30px;
-  opacity: 0.99;
+  opacity: 0;
   padding: 50px 20px;
+  animation: fadeIn 1s forwards;
+}
+
+.wrapper.visible, .second-wrapper.visible {
+  opacity: 1;
 }
 
 .chart-container {
@@ -126,6 +145,19 @@ html, body {
   flex: 1;
   padding: 20px;
   text-align: right;
+}
+
+.dropdown-menu {
+  position: relative;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu:hover {
+  background-color: #f0f0f0;
 }
 
 .green {
