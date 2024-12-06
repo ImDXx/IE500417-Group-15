@@ -25,6 +25,7 @@ const renderGraph = async () => {
 
     const years = data.year;
     const coalEmissions = data.coal_co2;
+    const nonCoalEmissions = data.non_coal_co2;
     const airPollutionDeaths = data.air_pollution_deaths;
 
     const ctx = chartCanvas.value.getContext('2d');
@@ -43,6 +44,14 @@ const renderGraph = async () => {
                     data: coalEmissions,
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    yAxisID: 'y1',
+                    borderWidth: 2,
+                },
+                {
+                    label: 'Non-Coal CO₂ Emissions (Million Tonnes)',
+                    data: nonCoalEmissions,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     yAxisID: 'y1',
                     borderWidth: 2,
                 },
