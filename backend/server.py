@@ -176,27 +176,40 @@ def get_air_pollution_data():
         # Load and process the air pollution dataset
 
         
-        df = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
-        
-        #Period = Year
-        df['Period'] = df['Period'].astype(int)
-
-        df = df.dropna(subset=['Period', 'FactValueNumeric']) 
-
-        # Example processing (average PM2.5 levels by year)
-        # processed_data = (df.groupby('Period')[['FactValueNumeric']].mean().to_dict())
+        air_pollution_data = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
+        air_pollution_data['Period'] = air_pollution_data['Period'].astype(int)
+        air_pollution_data = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']) 
 
         selected_countries = ['United States of America', 'India' , 'China']
 
-        df_filtered = df[df['Location'].isin(selected_countries)]
+        air_pollution_filtered = air_pollution_data[air_pollution_data['Location'].isin(selected_countries)]
 
-        grouped_data = df_filtered.groupby(['Location', 'Period'])['FactValueNumeric'].mean().unstack(fill_value=0)
+        air_pollution_filtered['Location'] = air_pollution_filtered['Location'].replace(
+            {'United States of America': 'United States'})
 
-        data = grouped_data.to_dict(orient='index') 
+        population_data = data[['country', 'year', 'population']].dropna()
+        population_data.rename(columns={'country': 'Location', 'year': 'Period'}, inplace=True)
 
-        print(data)
+        print(air_pollution_filtered['Location'].unique())
+        print(population_data['Location'].unique())
 
-        return jsonify(data)
+        merged_df = pd.merge(
+            air_pollution_filtered,
+            population_data,
+            on=['Location', 'Period'],
+            how='inner'
+        )
+
+        #Deaths per 1 billion
+        merged_df['deaths_per_1B'] = (merged_df['FactValueNumeric']/merged_df['population'] * 1000000000)
+        
+        grouped_data = merged_df.groupby(['Location' , 'Period'])['deaths_per_1B'].mean().unstack(fill_value=0)
+
+        combined_data = grouped_data.to_dict(orient='index') 
+
+        print(combined_data)
+
+        return jsonify(combined_data)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -217,7 +230,10 @@ def get_coal_vs_air_pollution():
         air_pollution_data = air_pollution_data.groupby('year')['air_pollution_deaths'].mean().reset_index()
 
         # Merge with the CO₂ emissions dataset
-        china_co2_data = data[data['country'] == 'China'][['year', 'coal_co2']]
+        china_co2_data = data[data['country'] == 'China'][['year', 'coal_co2', 'co2']]
+
+        china_co2_data['non_coal_co2'] = china_co2_data['co2'] - china_co2_data['coal_co2']
+
         combined_data = pd.merge(china_co2_data, air_pollution_data, on='year', how='inner')
 
         # Convert to JSON
