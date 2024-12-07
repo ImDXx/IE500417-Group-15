@@ -61,6 +61,7 @@
       <p>
         Compare PM2.5 levels across different countries over the years.
       </p>
+      <button @click="redirectToPage2" class="see-more-button">See more</button>
     </div>
   </div>
 </template>
@@ -70,10 +71,16 @@ import { ref, computed } from 'vue';
 import GraphComponent from './charts/GraphComponent.vue';
 import RadarChart from './charts/RadarChart.vue';
 import AirPollutionChart from './charts/AirPollutionChart.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const selectedVisualization = ref('co2_emissions');
 const selectedYear = ref(2020);
 const selectedCountry = ref('India');
+
+const redirectToPage2 = () => {
+  router.push('/page2');
+};
 
 const yAxisLabel = computed(() => {
   switch (selectedVisualization.value) {
@@ -211,6 +218,21 @@ html, body {
 
 .button-group button:hover {
   background-color: #e0e0e0;
+}
+
+.see-more-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.see-more-button:hover {
+  background-color: #45a049;
 }
 
 .green {
