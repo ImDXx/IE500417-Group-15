@@ -23,9 +23,15 @@ except Exception as e:
 
 @app.route('/available_years')
 def available_years():
+    # Extract unique years from the dataset
     unique_years = co2_data['year'].dropna().unique()
-    sorted_years = sorted(unique_years)
-    return jsonify([int(year) for year in sorted_years])
+    sorted_years = sorted(unique_years)  # Sort the years for better usability
+
+    # Convert all years to Python int type for JSON serialization
+    python_years = [int(year) for year in sorted_years]
+
+    # Convert the NumPy array directly to a list without calling tolist() again
+    return jsonify(python_years)
 
 
 @app.route('/multi_country_data')
@@ -107,20 +113,32 @@ def get_ghg_contributors():
 def emissions_by_year():
     country = request.args.get('country', 'China')
     year = int(request.args.get('year', 2020))
+
+    # Filter data for the selected country and year
     filtered_data = co2_data[(co2_data['country'] == country) & (co2_data['year'] == year)]
 
     if filtered_data.empty:
-        return jsonify({"error": "No data available for the selected country and year."}), 404
+        return jsonify({
+            "error": "No data available for the selected country and year."
+        }), 404
 
+    # Extract per capita emissions data
     emissions_per_capita = filtered_data[
         ['coal_co2_per_capita', 'flaring_co2_per_capita', 'gas_co2_per_capita', 
          'oil_co2_per_capita', 'other_co2_per_capita']
     ].fillna(0).iloc[0]
 
+    # Return as JSON
     return jsonify({
         "country": country,
         "year": year,
-        "emissions": emissions_per_capita.to_dict()
+        "emissions": {
+            "Coal CO₂ (per capita)": emissions_per_capita['coal_co2_per_capita'],
+            "Flaring CO₂ (per capita)": emissions_per_capita['flaring_co2_per_capita'],
+            "Gas CO₂ (per capita)": emissions_per_capita['gas_co2_per_capita'],
+            "Oil CO₂ (per capita)": emissions_per_capita['oil_co2_per_capita'],
+            "Other CO₂ (per capita)": emissions_per_capita['other_co2_per_capita'],
+        }
     })
 
 
