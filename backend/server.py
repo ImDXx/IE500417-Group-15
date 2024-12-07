@@ -176,7 +176,7 @@ def get_air_pollution_data():
         # Load and process the air pollution dataset
 
         
-        air_pollution_data = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
+        air_pollution_data = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vTxa5B5dcu0nmGheEwdrqNus2ghBe-qDz9OWUBs55pCClHTHsIfzV7QbAfId74c_J1H_l2603A6GrhZ/pub?gid=1680758461&single=true&output=csv')
         air_pollution_data['Period'] = air_pollution_data['Period'].astype(int)
         air_pollution_data = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']) 
 
