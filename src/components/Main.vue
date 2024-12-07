@@ -53,14 +53,16 @@
         </button>
       </div>
       <div class="button-group">
-        <button
-            v-for="year in [2020, 2019, 2018]"
-            :key="year"
-            :class="{ active: selectedYear === year }"
-            @click="selectedYear = year"
-        >
-          {{ year }}
-        </button>
+        <input
+            type="range"
+            min="1900"
+            max="2020"
+            step="1"
+            v-model="tempYear"
+            @input="debounceUpdateYear"
+            class="slider"
+        />
+        <span>{{ selectedYear }}</span>
       </div>
     </div>
   </div>
@@ -89,6 +91,22 @@ const router = useRouter();
 const selectedVisualization = ref('co2_emissions');
 const selectedYear = ref(2020);
 const selectedCountry = ref('India');
+
+const tempYear = ref(2020);
+
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+};
+
+const updateYear = () => {
+  selectedYear.value = tempYear.value;
+};
+
+const debounceUpdateYear = debounce(updateYear, 300);
 
 const redirectToPage2 = () => {
   router.push('/page2');
@@ -259,6 +277,11 @@ html, body {
 .bullet-list {
   list-style-position: inside;
   padding-left: 0;
+}
+
+.slider {
+  width: 100%;
+  margin: 10px 0;
 }
 
 .green {
