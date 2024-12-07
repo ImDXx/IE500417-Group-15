@@ -1,5 +1,17 @@
 <template>
   <div class="wrapper">
+    <div class="top-text-container">
+      <h1>Welcome to the China Coal Emissions and Pollution Dashboard</h1>
+      <p>This platform is your gateway to understanding the environmental impact of coal in China. Explore interactive visualizations and detailed data to uncover the role of coal in shaping China's emissions landscape:</p>
+      <ul class="bullet-list">
+        <li>CO₂ Emissions Over Time: Track China's coal-related emissions and observe trends over the years.</li>
+        <li>Fuel-Type Analysis: Dive into the breakdown of emissions by coal and other energy sources.</li>
+        <li>Per Capita Comparisons: See how China's coal emissions compare with other nations and their per capita impacts.</li>
+        <li>Air Pollution Metrics: Analyze PM2.5 levels linked to coal usage and their effects on air quality.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrapper">
     <div class="chart-container">
       <GraphComponent
           :endpoint="'multi_country_data'"
@@ -233,6 +245,20 @@ html, body {
 
 .see-more-button:hover {
   background-color: #45a049;
+}
+
+.top-text-container {
+  text-align: start;
+  margin: 0 auto;
+}
+
+.top-text-container h1 {
+  color: green;
+}
+
+.bullet-list {
+  list-style-position: inside;
+  padding-left: 0;
 }
 
 .green {
