@@ -14,12 +14,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 30vh;
+  width: 50vh;
   margin: 0 auto;
-  text-align: center; /* Center text horizontally */
+  border-radius: 10px;
+  text-align: center;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: #181818;
 }
 </style>

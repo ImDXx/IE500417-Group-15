@@ -30,16 +30,26 @@
       <p>
         Compare per capita greenhouse gas emissions between China and another country.
       </p>
-      <select v-model="selectedCountry" class="dropdown-menu">
-        <option value="India">India</option>
-        <option value="United States">United States</option>
-        <option value="Brazil">Brazil</option>
-      </select>
-      <select v-model="selectedYear" class="dropdown-menu">
-        <option value="2020">2020</option>
-        <option value="2019">2019</option>
-        <option value="2018">2018</option>
-      </select>
+      <div class="button-group">
+        <button
+            v-for="country in ['India', 'United States', 'Brazil']"
+            :key="country"
+            :class="{ active: selectedCountry === country }"
+            @click="selectedCountry = country"
+        >
+          {{ country }}
+        </button>
+      </div>
+      <div class="button-group">
+        <button
+            v-for="year in [2020, 2019, 2018]"
+            :key="year"
+            :class="{ active: selectedYear === year }"
+            @click="selectedYear = year"
+        >
+          {{ year }}
+        </button>
+      </div>
     </div>
   </div>
   <div class="third-wrapper">
@@ -147,6 +157,7 @@ html, body {
   flex: 0 0 30%;
   padding: 20px;
   text-align: right;
+  align-items: center;
 }
 
 .dropdown-menu {
@@ -176,6 +187,31 @@ html, body {
   background-color: #f0f0f0;
 }
 
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-group button.active {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.button-group button:hover {
+  background-color: #e0e0e0;
+}
 
 .green {
   color: green;
