@@ -2,197 +2,148 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 import os
-import requests
+from sklearn.ensemble import RandomForestRegressor
 
 app = Flask(__name__)
 
 # Allow your frontend's origin
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
-# New dataset URL
+# Global datasets
 DATA_URL = "https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.csv"
-data = pd.read_csv(DATA_URL)
+AIR_POLLUTION_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTxa5B5dcu0nmGheEwdrqNus2ghBe-qDz9OWUBs55pCClHTHsIfzV7QbAfId74c_J1H_l2603A6GrhZ/pub?gid=1680758461&single=true&output=csv"
+
+# Load datasets
+try:
+    co2_data = pd.read_csv(DATA_URL)
+    air_pollution_data = pd.read_csv(AIR_POLLUTION_URL)
+    air_pollution_data['Period'] = air_pollution_data['Period'].astype(int)
+except Exception as e:
+    raise RuntimeError(f"Error loading datasets: {e}")
 
 @app.route('/available_years')
 def available_years():
-    # Extract unique years from the dataset
-    unique_years = data['year'].dropna().unique()
-    sorted_years = sorted(unique_years)  # Sort the years for better usability
-
-    # Convert all years to Python int type for JSON serialization
-    python_years = [int(year) for year in sorted_years]
-
-    # Convert the NumPy array directly to a list without calling tolist() again
-    return jsonify(python_years)
-
+    unique_years = co2_data['year'].dropna().unique()
+    sorted_years = sorted(unique_years)
+    return jsonify([int(year) for year in sorted_years])
 
 
 @app.route('/multi_country_data')
 def get_multi_country_data():
     visualization_type = request.args.get('type', 'co2_emissions')
     countries = ['China', 'India', 'United States']
-    selected_data = data[data['country'].isin(countries)]
+    selected_data = co2_data[co2_data['country'].isin(countries)]
 
     result = {}
     for country in countries:
         country_data = selected_data[selected_data['country'] == country]
-
-        if visualization_type == 'co2_emissions':
-            result[country] = {
-                'years': country_data['year'].tolist(),
-                'values': country_data['co2'].replace({pd.NA: None, float('nan'): None}).tolist()
-            }
-        elif visualization_type == 'fuel_emissions':
-            result[country] = {
-                'years': country_data['year'].tolist(),
-                'coal': country_data['coal_co2'].replace({pd.NA: None, float('nan'): None}).tolist(),
-                'oil': country_data['oil_co2'].replace({pd.NA: None, float('nan'): None}).tolist(),
-                'gas': country_data['gas_co2'].replace({pd.NA: None, float('nan'): None}).tolist()
-            }
-        elif visualization_type == 'gdp_vs_co2':
-            result[country] = {
-                'years': country_data['year'].tolist(),
-                'gdp': country_data['gdp'].replace({pd.NA: None, float('nan'): None}).tolist(),
-                'co2': country_data['co2'].replace({pd.NA: None, float('nan'): None}).tolist()
-            }
+        result[country] = _get_visualization_data(country_data, visualization_type)
 
     return jsonify(result)
+
+
+def _get_visualization_data(data, visualization_type):
+    """Helper function to extract visualization data."""
+    if visualization_type == 'co2_emissions':
+        return {
+            'years': data['year'].tolist(),
+            'values': data['co2'].replace({pd.NA: None, float('nan'): None}).tolist()
+        }
+    elif visualization_type == 'fuel_emissions':
+        return {
+            'years': data['year'].tolist(),
+            'coal': data['coal_co2'].replace({pd.NA: None, float('nan'): None}).tolist(),
+            'oil': data['oil_co2'].replace({pd.NA: None, float('nan'): None}).tolist(),
+            'gas': data['gas_co2'].replace({pd.NA: None, float('nan'): None}).tolist()
+        }
+    elif visualization_type == 'gdp_vs_co2':
+        return {
+            'years': data['year'].tolist(),
+            'gdp': data['gdp'].replace({pd.NA: None, float('nan'): None}).tolist(),
+            'co2': data['co2'].replace({pd.NA: None, float('nan'): None}).tolist()
+        }
+    return {}
+
 
 @app.route('/feature_importance')
 def get_feature_importance():
-    # Load the dataset (if not already loaded)
-    china_data = data[data['country'] == 'China']
-
-    # Drop irrelevant columns
-    china_data = china_data.drop(columns=['country', 'iso_code', 'year'])
-    
-    # Target and features
+    china_data = co2_data[co2_data['country'] == 'China'].drop(columns=['country', 'iso_code', 'year'])
     target = 'coal_co2'
-    features = china_data.drop(columns=[target])
+    features = china_data.drop(columns=[target]).fillna(china_data.median())
+    target_data = china_data[target].fillna(china_data[target].median())
 
-    # Handle missing values
-    features = features.fillna(features.median())
-    china_data[target] = china_data[target].fillna(china_data[target].median())
-
-    # Train RandomForest to get feature importance
-    from sklearn.ensemble import RandomForestRegressor
     model = RandomForestRegressor(random_state=42)
-    model.fit(features, china_data[target])
+    model.fit(features, target_data)
 
-    # Extract feature importance
-    importances = model.feature_importances_
     importance_df = pd.DataFrame({
         'Feature': features.columns,
-        'Importance': importances
+        'Importance': model.feature_importances_
     }).sort_values(by='Importance', ascending=False)
 
-    # Convert to dictionary
-    result = importance_df.head(5).to_dict(orient='records')  # Top 5 features
+    return jsonify(importance_df.head(5).to_dict(orient='records'))
 
-    return jsonify(result)
 
 @app.route('/correlation_matrix')
 def get_correlation_matrix():
-    # Filter data for China
-    china_data = data[data['country'] == 'China']
-
-    # Specify the features to include in the correlation matrix
-    selected_features = [
-        'population', 'gdp', 'co2', 'oil_co2', 'gas_co2', 'coal_co2'
+    china_data = co2_data[co2_data['country'] == 'China'][
+        ['population', 'gdp', 'co2', 'oil_co2', 'gas_co2', 'coal_co2']
     ]
+    correlation_matrix = china_data.corr()['coal_co2'].sort_values(ascending=False)
 
-    # Filter the dataset to include only the selected features
-    china_data = china_data[selected_features]
-
-    # Compute correlations
-    correlation_matrix = china_data.corr()
-
-    # Filter for the target variable 'coal_co2' and sort
-    coal_co2_corr = correlation_matrix['coal_co2'].sort_values(ascending=False)
-
-    # Combine the top 10 and bottom 10 correlations
-    top_10 = coal_co2_corr.head(10)  # Top 10 most positive correlations
-    bottom_10 = coal_co2_corr.tail(10)  # Top 10 most negative correlations
-
-    # Combine results
-    combined_results = pd.concat([top_10, bottom_10]).reset_index()
+    combined_results = pd.concat([correlation_matrix.head(10), correlation_matrix.tail(10)]).reset_index()
     combined_results.columns = ['Feature', 'Correlation']
-
     return jsonify(combined_results.to_dict(orient='records'))
+
 
 @app.route('/ghg_contributors')
 def get_ghg_contributors():
-    # Filter data for China
-    china_data = data[data['country'] == 'China']
+    china_data = co2_data[co2_data['country'] == 'China'][
+        ['year', 'coal_co2', 'oil_co2', 'gas_co2', 'flaring_co2', 'other_industry_co2']
+    ].fillna(0)
+    return jsonify(china_data.to_dict(orient='list'))
 
-    # Select relevant columns
-    selected_columns = ['year', 'coal_co2', 'oil_co2', 'gas_co2', 'flaring_co2', 'other_industry_co2']
-    china_data = china_data[selected_columns]
-
-    # Fill missing values with 0 for simplicity
-    china_data = china_data.fillna(0)
-
-    # Convert to JSON-friendly format
-    result = china_data.to_dict(orient='list')
-
-    return jsonify(result)
 
 @app.route('/emissions_by_year')
 def emissions_by_year():
     country = request.args.get('country', 'China')
     year = int(request.args.get('year', 2020))
-
-    # Filter data for the selected country and year
-    filtered_data = data[(data['country'] == country) & (data['year'] == year)]
+    filtered_data = co2_data[(co2_data['country'] == country) & (co2_data['year'] == year)]
 
     if filtered_data.empty:
-        return jsonify({
-            "error": "No data available for the selected country and year."
-        }), 404
+        return jsonify({"error": "No data available for the selected country and year."}), 404
 
-    # Extract per capita emissions data
     emissions_per_capita = filtered_data[
         ['coal_co2_per_capita', 'flaring_co2_per_capita', 'gas_co2_per_capita', 
          'oil_co2_per_capita', 'other_co2_per_capita']
     ].fillna(0).iloc[0]
 
-    # Return as JSON
     return jsonify({
         "country": country,
         "year": year,
-        "emissions": {
-            "Coal CO₂ (per capita)": emissions_per_capita['coal_co2_per_capita'],
-            "Flaring CO₂ (per capita)": emissions_per_capita['flaring_co2_per_capita'],
-            "Gas CO₂ (per capita)": emissions_per_capita['gas_co2_per_capita'],
-            "Oil CO₂ (per capita)": emissions_per_capita['oil_co2_per_capita'],
-            "Other CO₂ (per capita)": emissions_per_capita['other_co2_per_capita'],
-        }
+        "emissions": emissions_per_capita.to_dict()
     })
 
 
 @app.route('/air_pollution_data', methods=['GET'])
 def get_air_pollution_data():
     try:
-        # Load and process the air pollution dataset
+        # Work on a copy of the global dataset to avoid modifying the original
+        air_pollution_filtered = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']).copy()
 
-        
-        air_pollution_data = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vTxa5B5dcu0nmGheEwdrqNus2ghBe-qDz9OWUBs55pCClHTHsIfzV7QbAfId74c_J1H_l2603A6GrhZ/pub?gid=1680758461&single=true&output=csv')
-        air_pollution_data['Period'] = air_pollution_data['Period'].astype(int)
-        air_pollution_data = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']) 
-
-        selected_countries = ['United States of America', 'India' , 'China']
-
-        air_pollution_filtered = air_pollution_data[air_pollution_data['Location'].isin(selected_countries)]
-
+        # Replace "United States of America" with "United States"
         air_pollution_filtered['Location'] = air_pollution_filtered['Location'].replace(
-            {'United States of America': 'United States'})
+            {'United States of America': 'United States'}
+        )
 
-        population_data = data[['country', 'year', 'population']].dropna()
+        # Filter for the selected countries
+        selected_countries = ['United States', 'India', 'China']
+        air_pollution_filtered = air_pollution_filtered[air_pollution_filtered['Location'].isin(selected_countries)]
+
+        # Prepare population data from the CO2 dataset
+        population_data = co2_data[['country', 'year', 'population']].dropna().copy()
         population_data.rename(columns={'country': 'Location', 'year': 'Period'}, inplace=True)
 
-        print(air_pollution_filtered['Location'].unique())
-        print(population_data['Location'].unique())
-
+        # Merge air pollution data with population data
         merged_df = pd.merge(
             air_pollution_filtered,
             population_data,
@@ -200,53 +151,43 @@ def get_air_pollution_data():
             how='inner'
         )
 
-        #Deaths per 1 billion
-        merged_df['deaths_per_1B'] = (merged_df['FactValueNumeric']/merged_df['population'] * 1000000000)
-        
-        grouped_data = merged_df.groupby(['Location' , 'Period'])['deaths_per_1B'].mean().unstack(fill_value=0)
+        # Calculate deaths per 1 billion population
+        merged_df['deaths_per_1B'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e9
 
-        combined_data = grouped_data.to_dict(orient='index') 
+        # Group by 'Location' and 'Period', calculate the mean deaths per billion
+        grouped_data = merged_df.groupby(['Location', 'Period'])['deaths_per_1B'].mean()
 
-        print(combined_data)
+        # Convert the grouped data to JSON-friendly format
+        result = grouped_data.unstack(fill_value=0).to_dict(orient='index')
 
-        return jsonify(combined_data)
+        return jsonify(result)
 
     except Exception as e:
+        # Log and return error details in case of failure
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+
     
 @app.route('/coal_vs_air_pollution', methods=['GET'])
 def get_coal_vs_air_pollution():
     try:
-        # Load the air pollution dataset
-        air_pollution_data = pd.read_csv('static/datasets/AmbientAirPollutionDeaths.csv')
-        air_pollution_data.rename(columns={'Period': 'year', 'FactValueNumeric': 'air_pollution_deaths'}, inplace=True)
+        china_air_pollution = air_pollution_data[air_pollution_data['Location'] == 'China'][
+            ['Period', 'FactValueNumeric']
+        ].rename(columns={'Period': 'year', 'FactValueNumeric': 'air_pollution_deaths'}).groupby('year').mean()
 
-        # Filter relevant data for China
-        air_pollution_data = air_pollution_data[air_pollution_data['Location'] == 'China']
-        air_pollution_data = air_pollution_data[['year', 'air_pollution_deaths']]
-        
-        # Group and average deaths per year
-        air_pollution_data = air_pollution_data.groupby('year')['air_pollution_deaths'].mean().reset_index()
-
-        # Merge with the CO₂ emissions dataset
-        china_co2_data = data[data['country'] == 'China'][['year', 'coal_co2', 'co2']]
-
+        china_co2_data = co2_data[co2_data['country'] == 'China'][['year', 'coal_co2', 'co2']]
         china_co2_data['non_coal_co2'] = china_co2_data['co2'] - china_co2_data['coal_co2']
 
-        combined_data = pd.merge(china_co2_data, air_pollution_data, on='year', how='inner')
-
-        # Convert to JSON
+        combined_data = pd.merge(china_co2_data, china_air_pollution, on='year', how='inner')
         return jsonify(combined_data.to_dict(orient='list'))
-
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 
 @app.route('/test', methods=['GET'])
 def test_route():
     return "Test route works!"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
