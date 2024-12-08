@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 import os
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 app = Flask(__name__)
 
@@ -14,12 +15,8 @@ DATA_URL = "https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-da
 AIR_POLLUTION_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTxa5B5dcu0nmGheEwdrqNus2ghBe-qDz9OWUBs55pCClHTHsIfzV7QbAfId74c_J1H_l2603A6GrhZ/pub?gid=1680758461&single=true&output=csv"
 
 # Load datasets
-try:
-    co2_data = pd.read_csv(DATA_URL)
-    air_pollution_data = pd.read_csv(AIR_POLLUTION_URL)
-    air_pollution_data['Period'] = air_pollution_data['Period'].astype(int)
-except Exception as e:
-    raise RuntimeError(f"Error loading datasets: {e}")
+co2_data = pd.read_csv(DATA_URL)
+air_pollution_data = pd.read_csv(AIR_POLLUTION_URL)
 
 @app.route('/available_years')
 def available_years():
@@ -244,6 +241,63 @@ def get_coal_vs_air_pollution():
 
         combined_data = pd.merge(china_co2_data, china_air_pollution, on='year', how='inner')
         return jsonify(combined_data.to_dict(orient='list'))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/chart_data', methods=['GET'])
+def get_chart_data():
+    try:
+        # Step 2: Filter and preprocess air pollution data
+        air_pollution = air_pollution_data[
+            (air_pollution_data['Dim1'] == 'Both sexes') & 
+            (air_pollution_data['Dim2'] == 'ALL CAUSES')
+        ][['Location', 'Period', 'FactValueNumeric']].rename(
+            columns={
+                'Location': 'country',
+                'Period': 'year',
+                'FactValueNumeric': 'air_pollution_deaths'
+            }
+        )
+        air_pollution['year'] = air_pollution['year'].astype(int)
+        air_pollution = air_pollution.groupby(['country', 'year']).sum().reset_index()
+
+        # Step 3: Filter emissions data
+        emissions_columns = [
+            'country', 'year', 'co2', 'coal_co2', 'oil_co2', 'gas_co2', 
+            'cement_co2', 'methane', 'nitrous_oxide', 'total_ghg'
+        ]
+        emissions = co2_data[emissions_columns]
+
+        # Merge datasets
+        merged = pd.merge(air_pollution, emissions, on=['country', 'year'], how='inner')
+        numeric_columns = merged.select_dtypes(include=['float64', 'int64']).columns
+        merged[numeric_columns] = merged[numeric_columns].fillna(merged[numeric_columns].mean())
+
+        # Model training
+        features = ['co2', 'coal_co2', 'oil_co2', 'gas_co2', 'cement_co2', 'methane', 'nitrous_oxide', 'total_ghg']
+        target = 'air_pollution_deaths'
+        X = merged[features]
+        y = merged[target]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        model = GradientBoostingRegressor(random_state=42)
+        model.fit(X_train, y_train)
+        y_test_pred = model.predict(X_test)
+
+        # Simulate 20% emission reduction
+        X_test_reduced = X_test.copy()
+        X_test_reduced *= 0.8
+        y_reduced_pred = model.predict(X_test_reduced)
+
+        # Prepare data for Chart.js
+        actual_avg = y_test.mean()
+        predicted_avg = y_test_pred.mean()
+        reduced_avg = y_reduced_pred.mean()
+
+        chart_data = {
+            "labels": ["Actual Deaths", "Predicted Deaths", "Reduced Predicted Deaths"],
+            "values": [actual_avg, predicted_avg, reduced_avg]
+        }
+        return jsonify(chart_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

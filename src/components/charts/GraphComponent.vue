@@ -8,12 +8,13 @@
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-Chart.register(...registerables);
-
+Chart.register(...registerables, zoomPlugin);
 
 const source = "Source: Our World in Data";
-// Props for handling dynamic data
+
+// Props for dynamic data
 const props = defineProps({
   endpoint: {
     type: String,
@@ -37,17 +38,13 @@ const props = defineProps({
   },
 });
 
-// Chart instance
 let chartInstance = null;
 const chartCanvas = ref(null);
 
-// Fetch data for all countries
 const fetchData = async (endpoint, type) => {
   try {
     const response = await fetch(`http://localhost:5000/${endpoint}?type=${type}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     return await response.json();
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -55,26 +52,22 @@ const fetchData = async (endpoint, type) => {
   }
 };
 
-// Render graph dynamically
 const renderGraph = async () => {
   const data = await fetchData(props.endpoint, props.type);
   if (!data) return;
 
-  await nextTick(); // Ensure canvas is ready
+  await nextTick();
 
   const ctx = chartCanvas.value.getContext('2d');
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+  if (chartInstance) chartInstance.destroy();
 
   const datasets = [];
   if (props.type === 'fuel_emissions') {
-    // Handle datasets for fuel emissions
     Object.keys(data).forEach((country, index) => {
       ['coal', 'oil', 'gas'].forEach((fuelType) => {
         datasets.push({
           label: `${country} (${fuelType})`,
-          data: data[country][fuelType] || [], // Handle missing fields
+          data: data[country][fuelType] || [],
           borderColor: `hsl(${index * 360 / Object.keys(data).length + (fuelType === 'coal' ? 0 : fuelType === 'oil' ? 120 : 240)}, 70%, 50%)`,
           borderWidth: 2,
           fill: false,
@@ -82,7 +75,6 @@ const renderGraph = async () => {
       });
     });
   } else if (props.type === 'gdp_vs_co2') {
-    // Handle datasets for GDP vs CO₂
     Object.keys(data).forEach((country, index) => {
       datasets.push({
         label: `${country} GDP`,
@@ -101,7 +93,6 @@ const renderGraph = async () => {
       });
     });
   } else {
-    // Handle datasets for co2_emissions
     Object.keys(data).forEach((country, index) => {
       datasets.push({
         label: country,
@@ -116,7 +107,7 @@ const renderGraph = async () => {
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data[Object.keys(data)[0]].years, // Use years from the first country
+      labels: data[Object.keys(data)[0]].years,
       datasets,
     },
     options: {
@@ -129,18 +120,38 @@ const renderGraph = async () => {
         legend: {
           position: 'top',
         },
+        zoom: {
+          pan: { enabled: true, mode: 'x' },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x',
+          },
+        },
       },
       scales: {
         x: {
           title: {
             display: true,
             text: props.xAxisLabel,
+            color: 'rgba(255, 255, 255, 0.8)', // Semi-transparent text
+          },
+          ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.2)', // Transparent gridlines
+            borderColor: 'rgba(255, 255, 255, 0.3)', // Transparent border
           },
         },
         y: {
           title: {
             display: true,
             text: props.yAxisLabel,
+            color: 'rgba(255, 255, 255, 0.8)', // Semi-transparent text
+          },
+          ticks: { color: 'rgba(255, 255, 255, 0.6)' },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.2)', // Transparent gridlines
+            borderColor: 'rgba(255, 255, 255, 0.3)', // Transparent border
           },
         },
       },
@@ -148,8 +159,6 @@ const renderGraph = async () => {
   });
 };
 
-
-// Watch for changes in props.type and re-render the graph
 watch(() => props.type, renderGraph, { immediate: true });
 onMounted(renderGraph);
 </script>
@@ -161,18 +170,18 @@ onMounted(renderGraph);
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-height: 500px;
+  height: 100vh;
 }
 
 canvas {
   max-width: 100%;
   height: 100%;
+  background-color: #181818;
 }
 
 .source {
   margin-top: 1rem;
   font-size: 0.9rem;
-  margin-left: 50px;
-  color: #555;
+  color: #aaa;
 }
 </style>
