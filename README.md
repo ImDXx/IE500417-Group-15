@@ -1,22 +1,26 @@
 # IE500417-Group15
- Data visualization project
+This is Group15 Project submission.
 
 ## Instructions to Run the Project:
+ To get Started with the Project follow these steps:
 
-### Install Required dependencies:
+##  1: Clone The Repository:
+   ```
+   git clone https://github.com/ImDXx/IE500417-Group-15.git
+   ```
 
-#### Python Dependencies
- - pip install -r requirements.txt
+## 2: Install Required dependencies
+ ```
+ 1. Install Python
+ 2. pip install -r requirements.txt
+ 3. npm install
+ ```
 
-#### Node.js Dependencies
- - npm install
-
-### Run Backend Server
+## 3: Run Backend Server
+```
  - python backend\server.py
-
-### Run Front end 
- -  npm run dev
-
-
- ## This project is available at:
- https://github.com/ImDXx/IE500417-Group-15
+```
+## 4: Run Front end 
+```
+ -  Npm run dev
+```
