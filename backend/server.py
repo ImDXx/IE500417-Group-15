@@ -145,6 +145,9 @@ def emissions_by_year():
 @app.route('/air_pollution_data', methods=['GET'])
 def get_air_pollution_data():
     try:
+
+        metric = request.args.get('metric','deaths_per_billion')
+
         # Work on a copy of the global dataset to avoid modifying the original
         air_pollution_filtered = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']).copy()
 
@@ -170,12 +173,16 @@ def get_air_pollution_data():
         )
 
         # Calculate deaths per 1 billion population
-        merged_df['deaths_per_1B'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e9
+        merged_df['deaths_per_billion'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e9
+        merged_df['deaths_per_million'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e6
+        merged_df['total_deaths'] = merged_df['FactValueNumeric']
 
-        # Group by 'Location' and 'Period', calculate the mean deaths per billion
-        grouped_data = merged_df.groupby(['Location', 'Period'])['deaths_per_1B'].mean()
 
-        # Convert the grouped data to JSON-friendly format
+        if metric not in ['total_deaths', 'deaths_per_million', 'deaths_per_billion']:
+            return jsonify({"error": "Invalid metric"}), 400
+        
+        grouped_data = merged_df.groupby(['Location', 'Period'])[metric].mean()
+
         result = grouped_data.unstack(fill_value=0).to_dict(orient='index')
 
         return jsonify(result)
