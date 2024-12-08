@@ -68,14 +68,22 @@
   </div>
   <div class="third-wrapper">
     <div class="chart-container">
-      <AirPollutionChart />
+      <AirPollutionChart :selectedDeaths="selectedDeaths" />
     </div>
     <div class="text-container">
-      <h1 class="green">Air Pollution Levels</h1>
+      <h1 class="green">Air Pollution Attributable Deaths</h1>
       <p>
-        Compare PM2.5 levels across different countries over the years.
+        Shows Air Pollution attributable deaths for countries per year from 2010-2019. 
       </p>
+      <select v-model="selectedDeaths" class="dropdown-menu">
+        <option value="total_deaths">Total Deaths</option>
+        <option value="deaths_per_million">Deaths Per Million</option>
+        <option value="deaths_per_billion">Deaths Per Billion</option>
+      </select>
       <button @click="redirectToPage2" class="see-more-button">See more</button>
+      <p>
+        Press "See more" to see comparison between CO2 emissions and Air Pollution attributable Deaths
+      </p>
     </div>
   </div>
 </template>
@@ -91,6 +99,7 @@ const router = useRouter();
 const selectedVisualization = ref('co2_emissions');
 const selectedYear = ref(2020);
 const selectedCountry = ref('India');
+const selectedDeaths = ref("deaths_per_billion")
 
 const tempYear = ref(2020);
 
@@ -195,6 +204,8 @@ html, body {
   padding: 20px;
   text-align: right;
   align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdown-menu {
@@ -251,7 +262,8 @@ html, body {
 }
 
 .see-more-button {
-  margin-top: 20px;
+  margin-top: auto;
+  margin-bottom: 20px;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -259,6 +271,7 @@ html, body {
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
 }
 
 .see-more-button:hover {
