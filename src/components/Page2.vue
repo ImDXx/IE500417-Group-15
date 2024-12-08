@@ -1,8 +1,7 @@
 <template>
   <div class="page1-container">
-    <h1>This is page 2</h1>
-    <p>Oscar yeet a graph here please</p>
     <CoalVsAirPollution />
+    <div class="text-container">This graph shows the relationship between CO2 emissions in China and Air Pollution deaths in China</div>
   </div>
 </template>
 
@@ -27,5 +26,14 @@ import CoalVsAirPollution from './charts/CoalVsAirPollution.vue';
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.text-container {
+  color: #ffffff;
+  font-size: 20px;
+  margin-top: 20px;
+  max-width: 800px;
+  line-height: 1.5;
+  background-color: #181818;
 }
 </style>
