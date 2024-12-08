@@ -142,19 +142,16 @@ def emissions_by_year():
 @app.route('/air_pollution_data', methods=['GET'])
 def get_air_pollution_data():
     try:
-        metric = request.args.get('metric', 'deaths_per_billion')
+        metric = request.args.get('metric', 'deaths_per_100_million')
         filter_type = request.args.get('filter', 'highest_population')
 
         print(f"Metric: {metric}")
         print(f"Filter Type: {filter_type}")
 
         air_pollution_filtered = air_pollution_data.dropna(subset=['Period', 'FactValueNumeric']).copy()
-
-
         air_pollution_filtered['Location'] = air_pollution_filtered['Location'].replace(
             {'United States of America': 'United States'}
         )
-
 
         population_data = co2_data[['country', 'year', 'population']].dropna().copy()
         population_data.rename(columns={'country': 'Location', 'year': 'Period'}, inplace=True)
@@ -166,22 +163,20 @@ def get_air_pollution_data():
             how='inner'
         )
 
-        print(merged_df[['FactValueNumeric', 'population']].head())
-
-
         merged_df = merged_df.dropna(subset=['FactValueNumeric', 'population'])
         merged_df = merged_df[merged_df['population'] > 0]
 
-        if metric == 'deaths_per_billion':
-            merged_df['deaths_per_billion'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e9
-        elif metric == 'deaths_per_million':
-            merged_df['deaths_per_million'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e6
-        elif metric == 'total_deaths':
-            merged_df['total_deaths'] = merged_df['FactValueNumeric']
-        else:
-            return jsonify({"error": "Invalid metric"}), 400
+        merged_df['deaths_per_million'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e6
+        merged_df['deaths_per_100_million'] = (merged_df['FactValueNumeric'] / merged_df['population']) * 1e8
+        merged_df['total_deaths'] = merged_df['FactValueNumeric']  
 
-        print(merged_df[['FactValueNumeric', 'population', metric]].head())
+        # Apply population threshold if using deaths_per_100_million
+        if metric == 'deaths_per_100_million':
+            population_threshold = 100_000_000
+            merged_df = merged_df[merged_df['population'] >= population_threshold]
+
+        if metric not in merged_df.columns:
+            return jsonify({"error": "Invalid metric"}), 400
 
         if filter_type == 'highest_population':
             sorted_data = merged_df.groupby('Location')['population'].max().sort_values(ascending=False)
@@ -192,42 +187,26 @@ def get_air_pollution_data():
         else:
             return jsonify({"error": "Invalid filter option"}), 400
 
-
-        print(f"Sorted Data for {filter_type}:")
-        print(sorted_data.head())
-
-
         filtered_countries = sorted_data.head(3).index.tolist()
         print(f"Filtered Countries: {filtered_countries}")
 
         filtered_df = merged_df[merged_df['Location'].isin(filtered_countries)]
 
         if filtered_df.empty:
-            print("No data available for the selected filter and metric.")
             return jsonify({"error": "No data available for the selected filter and metric."}), 400
 
-     
         grouped_data = filtered_df.groupby(['Location', 'Period'])[metric].mean()
 
-    
-        print(f"Grouped Data: {grouped_data.head()}")
-
-  
         result = grouped_data.unstack(fill_value=0).to_dict(orient='index')
 
         if not result:
-            print("No data available for the selected filter and metric.")
             return jsonify({"error": "No data available for the selected filter and metric."}), 400
-
-        print(result) 
 
         return jsonify(result)
 
     except Exception as e:
-        # Log and return error details in case of failure
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
-
 
 @app.route('/coal_vs_air_pollution', methods=['GET'])
 def get_coal_vs_air_pollution():

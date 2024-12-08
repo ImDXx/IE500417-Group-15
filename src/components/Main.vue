@@ -81,7 +81,7 @@
       <select v-model="selectedDeaths" class="dropdown-menu">
         <option value="total_deaths">Total Deaths</option>
         <option value="deaths_per_million">Deaths Per Million</option>
-        <option value="deaths_per_billion">Deaths Per Billion</option>
+        <option value="deaths_per_100_million">Deaths Per 100 Million</option>
       </select>
       <select v-model="selectedFilter" class="dropdown-menu">
         <option value="highest_population">Highest Population</option>
@@ -107,7 +107,7 @@ const router = useRouter();
 const selectedVisualization = ref('co2_emissions');
 const selectedYear = ref(2020);
 const selectedCountry = ref('India');
-const selectedDeaths = ref("deaths_per_billion")
+const selectedDeaths = ref("deaths_per_100_million")
 const selectedFilter = ref("highest_population")
 const tempYear = ref(2020);
 
