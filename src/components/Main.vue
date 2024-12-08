@@ -68,7 +68,10 @@
   </div>
   <div class="third-wrapper">
     <div class="chart-container">
-      <AirPollutionChart :selectedDeaths="selectedDeaths" />
+      <AirPollutionChart 
+        :selectedDeaths="selectedDeaths"
+        :selectedFilter="selectedFilter"
+      />
     </div>
     <div class="text-container">
       <h1 class="green">Air Pollution Attributable Deaths</h1>
@@ -79,6 +82,11 @@
         <option value="total_deaths">Total Deaths</option>
         <option value="deaths_per_million">Deaths Per Million</option>
         <option value="deaths_per_billion">Deaths Per Billion</option>
+      </select>
+      <select v-model="selectedFilter" class="dropdown-menu">
+        <option value="highest_population">Highest Population</option>
+        <option value="highest_deaths">Highest Deaths</option>
+        <option value="lowest_deaths">Lowest Deaths</option>
       </select>
       <button @click="redirectToPage2" class="see-more-button">See more</button>
       <p>
@@ -100,7 +108,7 @@ const selectedVisualization = ref('co2_emissions');
 const selectedYear = ref(2020);
 const selectedCountry = ref('India');
 const selectedDeaths = ref("deaths_per_billion")
-
+const selectedFilter = ref("highest_population")
 const tempYear = ref(2020);
 
 const debounce = (func, delay) => {
@@ -209,6 +217,7 @@ html, body {
 }
 
 .dropdown-menu {
+  min-width: 150px;
   position: relative;
   display: inline-block;
   padding: 10px;

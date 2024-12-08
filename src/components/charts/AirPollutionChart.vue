@@ -14,6 +14,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  selectedFilter: {
+    type: String,
+    required: true,
+  },
 });
 
 
@@ -21,9 +25,9 @@ const chartCanvas = ref(null);
 let chartInstance = null;
 
 
-const fetchAirPollutionData = async (metric) => {
+const fetchAirPollutionData = async (metric, filter) => {
   try {
-    const response = await fetch(`http://localhost:5000/air_pollution_data?metric=${metric}`);
+    const response = await fetch(`http://localhost:5000/air_pollution_data?metric=${metric}&filter=${filter}`);;
     const data = await response.json();
 
     const years = Object.keys(data[Object.keys(data)[0]]); 
@@ -60,8 +64,9 @@ const getRandomColor = () => {
   return `rgba(${r}, ${g}, ${b}, 0.5)`;
 };
 
+
 const renderAirPollutionChart = async () => {
-  const data = await fetchAirPollutionData(props.selectedDeaths);
+  const data = await fetchAirPollutionData(props.selectedDeaths, props.selectedFilter);
 
   await nextTick(); 
 
@@ -132,9 +137,12 @@ const renderAirPollutionChart = async () => {
 };
 
 watch(
-  () => props.selectedDeaths,
-  renderAirPollutionChart,
-  { immediate: true } 
+  () => [props.selectedDeaths, props.selectedFilter],
+  async ([newMetric, newFilter]) => {
+    const chartData = await fetchAirPollutionData(newMetric, newFilter);
+    renderAirPollutionChart(chartData);  // Ensure this function updates the chart
+  },
+  { immediate: true }
 );
 
 onUnmounted(() => {
