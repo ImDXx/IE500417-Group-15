@@ -11,8 +11,9 @@ import { RouterLink, RouterView } from 'vue-router';
     <nav class="nav-links">
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About us</RouterLink>
-      <RouterLink to="/page1">Page 1</RouterLink> <!-- Temp name-->
-      <RouterLink to="/page2">Page 2</RouterLink> <!-- Temp name-->
+      <RouterLink to="/page1">Prediction</RouterLink> <!-- Temp name-->
+      <RouterLink to="/page2">CO2 emissions and attributable deaths</RouterLink> <!-- Temp name-->
+      <RouterLink to="/page3">Chinas Emissions</RouterLink> <!-- Temp name-->
     </nav>
   </header>
 
