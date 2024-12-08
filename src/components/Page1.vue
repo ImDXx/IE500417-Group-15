@@ -3,7 +3,7 @@
     <h1>Emissions Prediction</h1>
     <p>
       This chart compares actual deaths, predicted deaths, and reduced predicted deaths due to air pollution. 
-      The predicted values are based on a machine learning model, and the reduced predicted deaths reflect a 
+      The predicted values were achieved using a Gradient Boosting Regressor model, and the reduced predicted deaths reflect a 
       scenario where emissions are reduced by 20%.
     </p>
     <p>
